@@ -21,10 +21,12 @@ public class HomeSerializer implements Serializer<Home> {
 	
 	public HomeSerializer() {
 		humanSerializer = new HumanSerializer(this);
+		homeController = new HomeController();
 	}
 
 	public HomeSerializer(HumanSerializer createdBy) {
 		humanSerializer = createdBy;
+		homeController = new HomeController();
 	}
 
 	@Override
@@ -72,11 +74,6 @@ public class HomeSerializer implements Serializer<Home> {
 		// using the controller-store as a source if needed
 		Home home = ctx.createOrFindInStore(this, "homes", id);
 
-//		private String id;
-//		private String name;
-//		private List<Human> humans;
-//		private int age;
-		
 		// Start deserializing over this object
 		if (hash.containsKey("name")) {
 			home.setName((String) hash.get("name"));
@@ -111,8 +108,8 @@ public class HomeSerializer implements Serializer<Home> {
 				// For each remaining human that has an ID in the set, make sure we
 				// deserialize & merge as needed
 				for (String humanId : humanIds) {
-					// Human human = ctx.createOrFindInStore(humanController, "humans", humanId);
-					// human.join(home);
+					Human human = ctx.createOrFindInStore(humanSerializer, "humans", humanId);
+					human.join(home);
 				}
 			}
 		};

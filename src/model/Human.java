@@ -14,7 +14,13 @@ public class Human {
 		this.id = id;
 		this.name = name;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Human [name=" + name + ", age=" + age + ", home=" + home
+				+ ", id=" + id + "]";
+	}
+
 	public String getName() {
 		return name;
 	}

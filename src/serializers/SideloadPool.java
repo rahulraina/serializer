@@ -66,7 +66,16 @@ public class SideloadPool {
 	}
 
 	public void setPool(List<Map<String, Object>> pool) {
-		this.pool = pool;
+		// Whenever pool changes, update by re-inserting records...
+		this.pool.clear();
+		this.poolElemsById.clear();
+		for (Map<String, Object> poolItem : pool) {
+			addObjectToPool((String) poolItem.get("id"), poolItem);
+		}
+	}
+
+	public boolean hasRecordForId(String id) {
+		return poolElemsById.containsKey(id);
 	}
 
 	

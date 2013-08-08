@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import model.Home;
 
@@ -43,6 +44,7 @@ public class HomeController {
 
 		Home home = new Home();
 		home.setId(id);
+		home.setAge(new Random().nextInt(100));
 		addHome(home);
 		return home;
 	}

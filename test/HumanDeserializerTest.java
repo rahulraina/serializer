@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -7,50 +10,58 @@ import model.Human;
 import org.junit.Before;
 import org.junit.Test;
 
-import serializers.JsonApiRootSerialization;
-import serializers.home.HomeWithOneHumanSerializer;
+import serializers.DeserializingContext;
 import serializers.human.HumanSerializer;
 
 
 public class HumanDeserializerTest extends TestCase {
 
+	HumanSerializer humanSerializer;
 	Home home; 
 	Human janeDoe; 
 	Human johnDoe;
 	
 	@Before
 	public void setup() {
+		humanSerializer = new HumanSerializer();
+
 		home = new Home("100", "No place like");
 		janeDoe = new Human("1", "Jane"); janeDoe.join(home);
 		johnDoe = new Human("2", "John"); johnDoe.join(home);
 	}
 
 	@Test
-	public void testHumanSerializer() {
-		setup(); // befores aren't firing. don't want to deal with this right now...
+	public void testHumanDeserializer() {
+		setup(); // befores aren't firing.
 		
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		System.out.println("HUMAN SERIALIZER TEST");
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		HumanSerializer humanSerializer = new HumanSerializer();
-		Map<String, Object> serialized = new JsonApiRootSerialization().serializeRoot(humanSerializer, janeDoe);
-		String asString = serialized.toString();
-		System.out.println("SLZD: \n" + asString);
-		assertEquals("{homes=[{id=100, name=No place like}], human={id=1, home=100, name=Jane}}", asString);
-	}
+		// String inJson = "{homes=[{id=100, name=No place like}], human={id=1, home=100, name=Jane}}";
+		Map<String, Object> inJson = new HashMap<String, Object>();
 
-	@Test
-	public void testHumanSerializerSpecialCase() {
-		setup(); // befores aren't firing. don't want to deal with this right now...
+		Map<String, Object> homeJson = new HashMap<String, Object>();
+		homeJson.put("id", "100");
+		homeJson.put("name", "No place like");
+		List<String> humanIds = new ArrayList<>();
+		humanIds.add("1");
+		homeJson.put("humans", humanIds);
 
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		System.out.println("HOME WITH ONE HUMAN SERIALIZER TEST");
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		HomeWithOneHumanSerializer homeSerializer = new HomeWithOneHumanSerializer();
-		Map<String, Object> serialized = new JsonApiRootSerialization().serializeRoot(homeSerializer, home);
-		String asString = serialized.toString();
-		System.out.println("SLZD: \n" + asString);
-		assertEquals("{home={id=100, name=No place like, humans=[1, 2]}, humans=[{id=1, name=Jane}, {id=2, name=John}]}", asString);
+		Map<String, Object> humanJson = new HashMap<>();
+		humanJson.put("id", "1");
+		humanJson.put("name", "Jane");
+		humanJson.put("home", homeJson.get("id"));
+
+		List<Map<String, Object>> homesJson = new ArrayList<Map<String,Object>>();
+		homesJson.add(homeJson);
+		
+		inJson.put("homes", homesJson);
+		inJson.put("human", humanJson);
+
+		System.out.println("INJSON: " + inJson);
+		
+		DeserializingContext ctx = new DeserializingContext(inJson);
+
+		Human human = humanSerializer.deserialize((Map<String, Object>) inJson.get("human"), ctx);
+		System.out.println("GOT HUMAN: " + human);
+
 	}
 	
 }

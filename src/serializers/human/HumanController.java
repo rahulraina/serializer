@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import model.Human;
 
@@ -34,6 +35,7 @@ public class HumanController {
 		
 		Human human = new Human();
 		human.setId(id);
+		human.setAge(new Random().nextInt(100));
 		addHuman(human);
 		return human;
 	}

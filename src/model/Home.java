@@ -20,7 +20,13 @@ public class Home {
 		this.id = id;
 		this.name = name;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Home [id=" + id + ", name=" + name + ", humans(size)=" + humans.size()
+				+ ", age=" + age + "]";
+	}
+
 	public String getName() {
 		return name;
 	}

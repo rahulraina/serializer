@@ -1,4 +1,5 @@
 package serializers;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,20 @@ public class DeserializingContext {
 	private Map<String, SideloadPool> objectPoolsByType;
 	private Map<String, Object> objectDeserializeInProgressByType;
 
-	public DeserializingContext() {
+	public DeserializingContext(Map<String, Object> sideloadPools) {
 		objectPoolsByType = new HashMap<String, SideloadPool>();
 		objectDeserializeInProgressByType = new HashMap<String, Object>();
+		
+		// For each sideloadPool..
+		for (Entry<String, Object> entry : sideloadPools.entrySet()) {
+			if (entry.getValue() instanceof Collection<?>) {
+				// Add this as a new side-load pool
+				System.out.println("Adding new sideload pool to Deserialization context: " + entry.getKey() + " with values: " + entry.getValue());
+				SideloadPool newPool = new SideloadPool(entry.getKey());
+				newPool.setPool((List<Map<String, Object>>) entry.getValue());
+				objectPoolsByType.put(entry.getKey(), newPool);
+			}
+		}
 	}
 	
 	protected void removeSideloadedObjectByTypeAndId(String jsonType, String id) {
@@ -40,15 +52,28 @@ public class DeserializingContext {
 		String typeIdKey = jsonType+"~"+id;
 		TYPE createdOrFound = (TYPE) this.getDeserializationInProgress(typeIdKey);
 
-		// If it's not already baking, find the authoritative source.
-		if (createdOrFound == null) {
-			createdOrFound = serializer.createOrFindById(id);
+		// If it's already baking, return what we got..
+		if (createdOrFound != null) {
+			return createdOrFound;
 		}
+		
+		// If it's not already baking, find the authoritative source to start with..
+		createdOrFound = serializer.createOrFindById(id);
 
 		// Add to our list of things in progress
 		this.objectDeserializeInProgressByType.put(typeIdKey, createdOrFound);
 
+		// If it's in the side-loads too, we need to deserialize it so it gets the latest updates, too..
+		// to resolve any changes to it
+		SideloadPool findInSideloads = objectPoolsByType.get(jsonType);
+		if ((findInSideloads != null) && findInSideloads.hasRecordForId(id)) {
+			System.out.println("Found sideload record for: " + jsonType + ", id: " + id);
+			Map<String, Object> foundInSideload = findInSideloads.findById(id);
+			createdOrFound = serializer.deserialize(foundInSideload, this);
+		}
+
 		return createdOrFound;
+		
 	}
 	
 	public Object getDeserializationInProgress(String id) {
