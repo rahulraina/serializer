@@ -3,6 +3,7 @@ package model;
 public class Human {
 
 	private String name;
+	private int age;
 	private Home home;
 	private String id;
 	
@@ -36,7 +37,10 @@ public class Human {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	
-	
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
 }

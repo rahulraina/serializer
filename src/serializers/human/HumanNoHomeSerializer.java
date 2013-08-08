@@ -2,10 +2,10 @@ package serializers.human;
 
 import java.util.Map;
 
+import model.Human;
+import serializers.DeserializingContext;
 import serializers.Serializer;
 import serializers.SerializingContext;
-
-import model.Human;
 
 
 public class HumanNoHomeSerializer implements Serializer<Human> {
@@ -20,20 +20,19 @@ public class HumanNoHomeSerializer implements Serializer<Human> {
 		// Take care of NORMAL attributes
 		serializedHuman.put("name", human.getName());
 
-//		// Take care of all human child-attributes
-//		try {
-//			ctx.pushObject(serializedHuman);
-//			
-////			Map<String, Object> serializedHome = homeSerializer.serialize(human.getHome(), ctx);
-////			serializedHuman.put("home_id", serializedHome.get("id"));
-//		} finally {
-//			// Done Taking care of all human child-attributes
-//			ctx.popCurrentObject();			
-//		}
-//
 		return serializedHuman;
 	}
 
+	@Override
+	public Human deserialize(Map<String, Object> hash, DeserializingContext ctx) {
+		throw new IllegalArgumentException("Deserialize not implemented for HumanNoHomeSerializer.");
+	}
+	
+	@Override
+	public Human createOrFindById(String id) {
+		throw new IllegalArgumentException("createOrFindById not implemented for HumanNoHomeSerializer.");
+	}
+	
 	@Override
 	public String getRootName() {
 		return "human";

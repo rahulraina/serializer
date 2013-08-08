@@ -9,14 +9,16 @@ public class Home {
 	private String id;
 	private String name;
 	private List<Human> humans;
-
+	private int age;
+	
 	public Home() {
+		humans = new ArrayList<Human>();
 	}
-
+	
 	public Home(String id, String name) {
+		this();
 		this.id = id;
 		this.name = name;
-		humans = new ArrayList<Human>();
 	}
 	
 	public String getName() {
@@ -38,4 +40,18 @@ public class Home {
 		this.id = id;
 	}
 
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	private void addHuman(Human human) {
+		if (human != null) {
+			human.join(this);
+		}
+	}
+	
 }

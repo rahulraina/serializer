@@ -6,6 +6,7 @@ import java.util.Map;
 
 import model.Home;
 import model.Human;
+import serializers.DeserializingContext;
 import serializers.Serializer;
 import serializers.SerializingContext;
 import serializers.human.HumanNoHomeSerializer;
@@ -36,7 +37,7 @@ public class HomeWithOneHumanSerializer implements Serializer<Home> {
 				Map<String, Object> serializedHumanNoHome = humanNoHomeSerializer.serialize(human, ctx);
 				humanIds.add((String) serializedHumanNoHome.get("id"));
 			}
-			serializedHome.put("human_ids", humanIds);
+			serializedHome.put("humans", humanIds);
 
 		} finally {
 			// Done Taking care of all human child-attributes
@@ -44,9 +45,17 @@ public class HomeWithOneHumanSerializer implements Serializer<Home> {
 		}
 
 		return serializedHome;
-
 	}
 
+	@Override
+	public Home createOrFindById(String id) {
+		throw new IllegalArgumentException("createOrFindById not implemented for HomeWithOneHumanSerializer.");
+	}
+	@Override
+	public Home deserialize(Map<String, Object> hash, DeserializingContext ctx) {
+		throw new IllegalArgumentException("Deserialize not implemented for HomeWithOneHumanSerializer.");
+	}
+	
 	@Override
 	public String getRootName() {
 		return "home";

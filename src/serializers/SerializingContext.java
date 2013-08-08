@@ -1,6 +1,6 @@
 package serializers;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -54,7 +54,7 @@ public class SerializingContext {
 		for (Entry<String, SideloadPool> sideload : objectPoolsByType.entrySet()) {
 			String poolName = sideload.getKey();
 			SideloadPool pool = sideload.getValue();
-			Collection<Map<String, Object>> poolMaps = pool.getPool();
+			List<Map<String, Object>> poolMaps = pool.getPool();
 			sideloadMap.put(poolName, poolMaps);
 		}
 		return sideloadMap;
